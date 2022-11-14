@@ -1,15 +1,26 @@
 use std::io::stdin;
 
+#[derive(Debug)]
 struct Visitor {
     name: String,
-    greeting: String,
+    action: VisitorAction,
+    age: i8
+}
+
+#[derive(Debug)]
+enum VisitorAction {
+    Accept,
+    AcceptWithNote { note: String },
+    Refuse,
+    Probation,
 }
 
 impl Visitor {
-    fn new(name: &str, greeting: &str) -> Self {
+    fn new(name: &str, action: VisitorAction, age: i8) -> Self {
         Self {
             name: name.to_lowercase(),
-            greeting: greeting.to_string(),
+            action,
+            age
         }
     }
     fn greet_visitor(&self) {
@@ -25,13 +36,15 @@ fn what_is_your_name() -> String {
     your_name.trim().to_lowercase()
 }
 fn main() {
-    println!("Hello, what's your name?");
+    loop {
+    println!("Hello, what's your name? (Leave empty and press ENTER to quit");
     let name = what_is_your_name();
+    
 
-    let visitor_list = [
-        Visitor::new("bert", "Hello Bert, enjoy your treehouse."),
-        Visitor::new("steve", "Hi Steve. Your milk is in the fridge."),
-        Visitor::new("fred", "Wow, who invited Fred?"),
+    let mut visitor_list = vec![
+        Visitor::new("bert", VisitorAction::Accept, 24),
+        Visitor::new("steve", VisitorAction::Probation, 22),
+        Visitor::new("fred", VisitorAction::AcceptWithNote { note: () }, 18),
     ];
 
     let known_visitor = visitor_list
@@ -40,9 +53,23 @@ fn main() {
 
     match known_visitor {
         Some(visitor) => visitor.greet_visitor(),
-        None => println!("You are not on the visitor list. Please leave.")
-        }
-            
+        None => {
 
-    println!("Hello, {}", name);
+            if name.is_empty() {
+                println!("The final list of visitors:");
+                println!("{:#?}", visitor_list);
+                break;
+            } else {
+                println!("{} is not on the visitor list.", name);
+                visitor_list.push(Visitor::new(&name, "New friend"));
+            }
+            
+        }
+    
+    
+    
+    }
+    
 }
+    }
+    
